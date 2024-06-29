@@ -5,12 +5,10 @@ mod shared {
   pub mod float_ext;
   pub mod non_inverting_op_amp;
 }
-mod op_amp;
 mod smooth_parameters;
-use {clipper::Clipper, op_amp::OpAmp, smooth_parameters::SmoothParameters, tone::Tone};
+use {clipper::Clipper, smooth_parameters::SmoothParameters, tone::Tone};
 
 pub struct TubeScreamer {
-  op_amp: OpAmp,
   clipper: Clipper,
   tone: Tone,
   smooth_parameters: SmoothParameters,
@@ -19,8 +17,7 @@ pub struct TubeScreamer {
 impl TubeScreamer {
   pub fn new(sample_rate: f32) -> Self {
     Self {
-      op_amp: OpAmp::new(sample_rate),
-      clipper: Clipper::new(),
+      clipper: Clipper::new(sample_rate),
       tone: Tone::new(sample_rate),
       smooth_parameters: SmoothParameters::new(sample_rate),
     }
@@ -40,8 +37,7 @@ impl TubeScreamer {
 
   pub fn process(&mut self, input: f32, drive: f32, tone: f32, level: f32) -> f32 {
     let (drive, tone, level) = self.smooth_parameters.process(drive, tone, level);
-    let op_amp_output = self.op_amp.process(input, drive);
-    let clip_output = self.clipper.process(op_amp_output);
+    let clip_output = self.clipper.process(input, drive);
     let tone_output = self.tone.process(input + clip_output, tone);
 
     tone_output * level
