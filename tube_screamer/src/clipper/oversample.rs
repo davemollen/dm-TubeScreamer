@@ -1,8 +1,5 @@
 mod fir_filter;
-use {
-  fir_filter::FirFilter,
-  std::simd::{f32x8, num::SimdFloat},
-};
+use fir_filter::FirFilter;
 
 const OVERSAMPLE_FACTOR: f32 = 8.;
 
@@ -28,20 +25,18 @@ impl Oversample {
     self.downsample(processed)
   }
 
-  fn upsample(&mut self, input: f32) -> f32x8 {
-    self
-      .upsample_fir
-      .process(f32x8::splat(input * OVERSAMPLE_FACTOR))
+  fn upsample(&mut self, input: f32) -> [f32; 8] {
+    self.upsample_fir.process([input * OVERSAMPLE_FACTOR; 8])
   }
 
-  fn run_upsampled_process<F>(&mut self, input: f32x8, callback: F) -> f32x8
+  fn run_upsampled_process<F>(&mut self, input: [f32; 8], callback: F) -> [f32; 8]
   where
     F: Fn([f32; 8]) -> [f32; 8],
   {
-    f32x8::from_array(callback(input.to_array()))
+    callback(input)
   }
 
-  fn downsample(&mut self, input: f32x8) -> f32 {
-    self.downsample_fir.process(input).reduce_sum()
+  fn downsample(&mut self, input: [f32; 8]) -> f32 {
+    self.downsample_fir.process(input).into_iter().sum()
   }
 }
