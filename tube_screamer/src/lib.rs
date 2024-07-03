@@ -41,8 +41,8 @@ impl TubeScreamer {
   pub fn process(&mut self, input: f32, drive: f32, tone: f32, level: f32) -> f32 {
     let (drive, tone, level) = self.smooth_parameters.process(drive, tone, level);
     let op_amp_output = self.op_amp.process(input, drive);
-    let clip_output = self.clipper.process(op_amp_output);
-    let tone_output = self.tone.process(input + clip_output, tone);
+    let clip_output = self.clipper.process(op_amp_output) * 0.4 + input * 0.8;
+    let tone_output = self.tone.process(clip_output, tone);
 
     tone_output * level
   }

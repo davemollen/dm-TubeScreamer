@@ -21,7 +21,7 @@ impl Oversample {
 
   pub fn process<F>(&mut self, input: f32, callback: F) -> f32
   where
-    F: Fn(f32x8) -> f32x8,
+    F: Fn([f32; 8]) -> [f32; 8],
   {
     let upsampled = self.upsample(input);
     let processed = self.run_upsampled_process(upsampled, callback);
@@ -36,9 +36,9 @@ impl Oversample {
 
   fn run_upsampled_process<F>(&mut self, input: f32x8, callback: F) -> f32x8
   where
-    F: Fn(f32x8) -> f32x8,
+    F: Fn([f32; 8]) -> [f32; 8],
   {
-    callback(input)
+    f32x8::from_array(callback(input.to_array()))
   }
 
   fn downsample(&mut self, input: f32x8) -> f32 {
