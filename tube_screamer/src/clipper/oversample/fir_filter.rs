@@ -41,15 +41,9 @@ impl FirFilter {
       .chain(front)
       .zip(coefficients)
       .fold([0.; 8], |mut result, (input, coeff)| {
-        result[0] += input[0] * coeff[0];
-        result[1] += input[1] * coeff[1];
-        result[2] += input[2] * coeff[2];
-        result[3] += input[3] * coeff[3];
-        result[4] += input[4] * coeff[4];
-        result[5] += input[5] * coeff[5];
-        result[6] += input[6] * coeff[6];
-        result[7] += input[7] * coeff[7];
-
+        for i in 0..8 {
+          result[i] = result[i] + input[i] * coeff[i];
+        }
         result
       })
   }

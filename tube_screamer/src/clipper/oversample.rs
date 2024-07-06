@@ -20,23 +20,8 @@ impl Oversample {
   where
     F: Fn([f32; 8]) -> [f32; 8],
   {
-    let upsampled = self.upsample(input);
-    let processed = self.run_upsampled_process(upsampled, callback);
-    self.downsample(processed)
-  }
-
-  fn upsample(&mut self, input: f32) -> [f32; 8] {
-    self.upsample_fir.process([input * OVERSAMPLE_FACTOR; 8])
-  }
-
-  fn run_upsampled_process<F>(&mut self, input: [f32; 8], callback: F) -> [f32; 8]
-  where
-    F: Fn([f32; 8]) -> [f32; 8],
-  {
-    callback(input)
-  }
-
-  fn downsample(&mut self, input: [f32; 8]) -> f32 {
-    self.downsample_fir.process(input).into_iter().sum()
+    let upsampled = self.upsample_fir.process([input * OVERSAMPLE_FACTOR; 8]);
+    let processed = callback(upsampled);
+    self.downsample_fir.process(processed).into_iter().sum()
   }
 }
