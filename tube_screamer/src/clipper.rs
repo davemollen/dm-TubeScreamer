@@ -1,9 +1,12 @@
+mod fir_filter;
 mod lookup_table;
-mod oversample;
-use {lookup_table::DIODE_TABLE, oversample::Oversample};
+use {fir_filter::FirFilter, lookup_table::DIODE_TABLE};
+
+const OVERSAMPLE_FACTOR: f32 = 8.;
 
 pub struct Clipper {
-  oversample: Oversample,
+  upsample_fir: FirFilter,
+  downsample_fir: FirFilter,
 }
 
 impl Clipper {
@@ -12,21 +15,24 @@ impl Clipper {
 
   pub fn new() -> Self {
     Self {
-      oversample: Oversample::new(),
+      upsample_fir: FirFilter::new(),
+      downsample_fir: FirFilter::new(),
     }
   }
 
   pub fn process(&mut self, input: f32) -> f32 {
-    self.oversample.process(input, |x| {
-      x.map(|x| {
-        let x = (x / 24.) * Self::HALF_SIZE + Self::HALF_SIZE;
-        let index = x.trunc();
-        let frac = x - index;
-        let i = index as usize;
+    let upsampled = self.upsample_fir.process([input * OVERSAMPLE_FACTOR; 8]);
+    let clipped = upsampled.map(|x| Self::simulate_diode_clipping(x));
+    self.downsample_fir.process(clipped).into_iter().sum()
+  }
 
-        DIODE_TABLE[i.clamp(0, Self::SIZE)] * (1. - frac)
-          + DIODE_TABLE[(i + 1).clamp(0, Self::SIZE)] * frac
-      })
-    })
+  fn simulate_diode_clipping(x: f32) -> f32 {
+    let x = (x / 24.) * Self::HALF_SIZE + Self::HALF_SIZE;
+    let index = x.trunc();
+    let frac = x - index;
+    let i = index as usize;
+
+    DIODE_TABLE[i.clamp(0, Self::SIZE)] * (1. - frac)
+      + DIODE_TABLE[(i + 1).clamp(0, Self::SIZE)] * frac
   }
 }

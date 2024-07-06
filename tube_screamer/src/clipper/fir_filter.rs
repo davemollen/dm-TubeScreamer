@@ -42,7 +42,7 @@ impl FirFilter {
       .zip(coefficients)
       .fold([0.; 8], |mut result, (input, coeff)| {
         for i in 0..8 {
-          result[i] = result[i] + input[i] * coeff[i];
+          result[i] += input[i] * coeff[i];
         }
         result
       })
