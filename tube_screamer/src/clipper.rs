@@ -27,7 +27,7 @@ impl Clipper {
   }
 
   fn simulate_diode_clipping(x: f32) -> f32 {
-    let x = (x / 24.) * Self::HALF_SIZE + Self::HALF_SIZE;
+    let x = (x * 0.25) * Self::HALF_SIZE + Self::HALF_SIZE;
     let index = x.trunc();
     let frac = x - index;
     let i = index as usize;
