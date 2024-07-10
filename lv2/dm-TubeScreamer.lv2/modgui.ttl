@@ -1,0 +1,30 @@
+@prefix modgui: <http://moddevices.com/ns/modgui#> .
+@prefix lv2:    <http://lv2plug.in/ns/lv2core#> .
+
+<https://github.com/davemollen/dm-TubeScreamer>
+    modgui:gui [
+        modgui:resourcesDirectory <modgui> ;
+        modgui:iconTemplate <modgui/icon-dm-tubescreamer.html> ;
+        modgui:stylesheet <modgui/stylesheet-dm-tubescreamer.css> ;
+        modgui:screenshot <modgui/screenshot-dm-tubescreamer.png> ;
+        modgui:thumbnail <modgui/thumbnail-dm-tubescreamer.png> ;
+        modgui:brand "DM" ;
+        modgui:label "TubeScreamer" ;
+        modgui:model "boxy" ;
+        modgui:panel "3-knobs" ;
+        modgui:color "racing" ;
+        modgui:knob "black" ;
+        modgui:port [
+            lv2:index 0 ;
+            lv2:symbol "drive" ;
+            lv2:name "Drive" ;
+        ] , [
+            lv2:index 1 ;
+            lv2:symbol "tone" ;
+            lv2:name "Tone" ;
+        ] , [
+            lv2:index 2 ;
+            lv2:symbol "level" ;
+            lv2:name "Level" ;
+        ] ;
+    ] .

@@ -5,3 +5,4 @@
     a lv2:Plugin ;
     lv2:binary <libdm_tube_screamer.so> ;
     rdfs:seeAlso <dm-TubeScreamer.ttl>  .
+<https://github.com/davemollen/dm-TubeScreamer> rdfs:seeAlso <modgui.ttl> .
