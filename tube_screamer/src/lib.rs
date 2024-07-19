@@ -1,3 +1,4 @@
+#![feature(portable_simd)]
 mod clipper;
 mod tone;
 mod shared {
