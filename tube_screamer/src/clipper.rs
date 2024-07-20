@@ -28,7 +28,7 @@ impl Clipper {
       clipping gain is 0.3333 -> 0.66666 * 0.5
       and the input signal is mixed with the clipped signal
     */
-    self.downsample_fir.process(clipped).reduce_sum() * 0.33333 + input
+    self.downsample_fir.process(clipped).reduce_sum() * 0.33333
   }
 
   fn clip(x: f32x8) -> f32x8 {
