@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 # Set the sample rate
 sample_rate = 44100  # in Hz
-double_sample_rate = sample_rate * 2.
 
 # Change the drive value to see the difference in the frequency response
 # Keep it between 0 and 1
