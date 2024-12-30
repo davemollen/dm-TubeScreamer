@@ -1,6 +1,6 @@
 use nih_plug::prelude::*;
 use std::sync::Arc;
-use tube_screamer::TubeScreamer;
+use tube_screamer::{Params as ProcessParams, TubeScreamer};
 mod tube_screamer_parameters;
 use tube_screamer_parameters::TubeScreamerParameters;
 mod editor;
@@ -8,16 +8,7 @@ mod editor;
 struct DmTubeScreamer {
   params: Arc<TubeScreamerParameters>,
   tube_screamer: TubeScreamer,
-}
-
-impl DmTubeScreamer {
-  pub fn get_params(&self) -> (f32, f32, f32) {
-    let drive = self.params.drive.value();
-    let tone = self.params.tone.value();
-    let level = self.params.level.value();
-
-    self.tube_screamer.map_params(drive, tone, level)
-  }
+  process_params: ProcessParams,
 }
 
 impl Default for DmTubeScreamer {
@@ -26,6 +17,7 @@ impl Default for DmTubeScreamer {
     Self {
       params: params.clone(),
       tube_screamer: TubeScreamer::new(44100.),
+      process_params: ProcessParams::new(44100.),
     }
   }
 }
@@ -66,8 +58,7 @@ impl Plugin for DmTubeScreamer {
     _context: &mut impl InitContext<Self>,
   ) -> bool {
     self.tube_screamer = TubeScreamer::new(buffer_config.sample_rate);
-    let (drive, tone, level) = self.get_params();
-    self.tube_screamer.initialize_params(drive, tone, level);
+    self.process_params = ProcessParams::new(buffer_config.sample_rate);
     true
   }
 
@@ -77,11 +68,17 @@ impl Plugin for DmTubeScreamer {
     _aux: &mut AuxiliaryBuffers,
     _context: &mut impl ProcessContext<Self>,
   ) -> ProcessStatus {
-    let (drive, tone, level) = self.get_params();
+    self.process_params.set(
+      self.params.drive.value(),
+      self.params.tone.value(),
+      self.params.level.value(),
+    );
 
     buffer.iter_samples().for_each(|mut channel_samples| {
       let sample = channel_samples.iter_mut().next().unwrap();
-      *sample = self.tube_screamer.process(*sample, drive, tone, level);
+      *sample = self
+        .tube_screamer
+        .process(*sample, &mut self.process_params);
     });
     ProcessStatus::Normal
   }
