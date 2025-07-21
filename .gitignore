@@ -1,2 +1,6 @@
 target
 .DS_Store
+*.svg
+*libdm_tube_screamer.so
+*libdm_tube_screamer.dylib
+*libdm_tube_screamer.dll
