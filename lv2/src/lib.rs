@@ -5,11 +5,11 @@ use tube_screamer::{Params, TubeScreamer};
 
 #[derive(PortCollection)]
 struct Ports {
-  drive: InputPort<Control>,
-  tone: InputPort<Control>,
-  level: InputPort<Control>,
-  input: InputPort<Audio>,
-  output: OutputPort<Audio>,
+  drive: InputPort<InPlaceControl>,
+  tone: InputPort<InPlaceControl>,
+  level: InputPort<InPlaceControl>,
+  input: InputPort<InPlaceAudio>,
+  output: OutputPort<InPlaceAudio>,
 }
 
 #[uri("https://github.com/davemollen/dm-TubeScreamer")]
@@ -39,10 +39,13 @@ impl Plugin for DmTubeScreamer {
   // Process a chunk of audio. The audio ports are dereferenced to slices, which the plugin
   // iterates over.
   fn run(&mut self, ports: &mut Ports, _features: &mut (), _sample_count: u32) {
-    self.params.set(*ports.drive, *ports.tone, *ports.level);
+    self
+      .params
+      .set(ports.drive.get(), ports.tone.get(), ports.level.get());
 
-    for (input, output) in ports.input.iter().zip(ports.output.iter_mut()) {
-      *output = self.tube_screamer.process(*input, &mut self.params);
+    for (input, output) in ports.input.iter().zip(ports.output.iter()) {
+      let tube_screamer_output = self.tube_screamer.process(input.get(), &mut self.params);
+      output.set(tube_screamer_output);
     }
   }
 }
