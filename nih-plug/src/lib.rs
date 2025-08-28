@@ -23,7 +23,7 @@ impl Default for DmTubeScreamer {
 }
 
 impl Plugin for DmTubeScreamer {
-  const NAME: &'static str = "dm-TubeScreamer";
+  const NAME: &'static str = "TubeScreamer";
   const VENDOR: &'static str = "DM";
   const URL: &'static str = "https://github.com/davemollen/dm-TubeScreamer";
   const EMAIL: &'static str = "davemollen@gmail.com";
