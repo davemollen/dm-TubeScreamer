@@ -69,6 +69,11 @@ impl Plugin for DmTubeScreamer {
     true
   }
 
+  fn reset(&mut self) {
+    self.tube_screamer.reset();
+    self.process_params.reset();
+  }
+
   fn process(
     &mut self,
     buffer: &mut Buffer,

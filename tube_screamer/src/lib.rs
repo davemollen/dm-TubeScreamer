@@ -3,8 +3,9 @@ mod clipper;
 mod params;
 mod tone;
 mod shared {
+  pub mod bilinear_transform;
+  pub mod biquad_filter;
   pub mod float_ext;
-  pub mod non_inverting_op_amp;
 }
 mod op_amp;
 pub use params::Params;
@@ -23,6 +24,12 @@ impl TubeScreamer {
       clipper: Clipper::new(),
       tone: Tone::new(sample_rate),
     }
+  }
+
+  pub fn reset(&mut self) {
+    self.op_amp.reset();
+    self.clipper.reset();
+    self.tone.reset();
   }
 
   pub fn process(&mut self, input: f32, params: &mut Params) -> f32 {
